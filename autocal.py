@@ -54,6 +54,9 @@ def main():
 		# Loop through and make a function call, writing to a new results folder
 		for tid in tids:
 
+			# Reset the success term
+			success = False
+
 			try: 
 
 				# First check if the data already exists, and if so, skip this step
@@ -100,6 +103,7 @@ def main():
 				sys.exit()
 
 			# If all success, write to the processed file
+			success = True
 			print("Success! Pipeline has been run for %s... finalising..." % tid)
 			if success == True:
 				os.chdir('/home/moss/autocal')
