@@ -69,6 +69,12 @@ def main():
 				#data_exists = check_happili(path,tid)
 				data_exists = 'Y'
 
+				# Decide which beams based on node, in groups of 10
+				hostname = os.popen('hostname').read().strip()
+				start_beam = (int(hostname[-1])-1)*10
+				end_beam = start_beam + 9
+				beamlist = arange(start_beam,end_beam+1)
+
 				# Otherwise, download the data
 				if data_exists == 'N':
 					try:
@@ -76,12 +82,6 @@ def main():
 					except:
 						print('Directory already exists!')
 					os.chdir('/data/apertif/%s' % tid)
-
-					# Decide which beams based on node, in groups of 10
-					hostname = os.popen('hostname').read().strip()
-					start_beam = (int(hostname[-1])-1)*10
-					end_beam = start_beam + 9
-					beamlist = arange(start_beam,end_beam+1)
 
 					# Get data with altadata library
 					cmd = ('python ~/altadata/getdata_alta.py %s %s-%s %.2d-%.2d N' % (tid[0:6],tid[6:],tid[6:],start_beam,end_beam))
@@ -113,6 +113,7 @@ def main():
 						if msname in done_ms:
 							print('I have already processed %s... continuing!' % msname)
 							continue
+
 						try:	
 							print('Currently running Apercal for %s...' % msname)
 
