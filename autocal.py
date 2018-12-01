@@ -67,7 +67,7 @@ def main():
 
 				# First check if the data already exists, and if so, skip this step
 				#data_exists = check_happili(path,tid)
-				data_exists = 'N'
+				data_exists = 'Y'
 
 				# Otherwise, download the data
 				if data_exists == 'N':
