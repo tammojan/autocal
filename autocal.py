@@ -37,6 +37,10 @@ def main():
 	processed = ascii.read('processed.txt')
 	done_tids = processed['tid']
 
+	# Text file to keep track of processed measurement sets specifically
+	processed_ms = ascii.read('processed_ms.txt')
+	done_ms = processed_ms['msname']
+
 	# Call ALTA to find new datasets
 	path = args.alta_path
 	tids = check_alta(path,done_tids)
@@ -75,6 +79,7 @@ def main():
 					hostname = os.popen('hostname').read().strip()
 					start_beam = (int(hostname[-1])-1)*10
 					end_beam = start_beam + 9
+					beamlist = arange(start_beam,end_beam+1)
 
 					# Get data with altadata library
 					cmd = ('python ~/altadata/getdata_alta.py %s %s-%s %.2d-%.2d N' % (tid[0:6],tid[6:],tid[6:],start_beam,end_beam))
@@ -94,7 +99,30 @@ def main():
 				# Do the Apercal thing
 				something = True
 				if something == True:
+
 					print('APERCAL PIPELINE STUFF WOULD GO HERE!')
+
+					# Loop over beams (at least, all the expected ones)
+					for beam in beamlist:
+
+						msname = 'WSRTA%s_B%.2d.MS' % (tid,beam)
+
+						# Do not process if the beam has already been done
+						if msname in done_ms:
+							print('I have already processed %s... continuing!' % msname)
+							continue
+						try:	
+							print('Currently running Apercal for %s...' % msname)
+
+							# YAY APERCAL SUCCESS
+							print('... running of Apercal pipeline complete!')
+
+							# Assume success, write progress out per beam
+							outms = open('/home/moss/autocal/processed_ms.txt','a')
+							outms.write('%s %s\n' % (msname,str(datetime.datetime.now())))
+							outms.flush()					
+						except:
+							print('Some error message for %s... Continuing!' % msname)
 
 				else:
 					print('Some error message for %s... Continuing!' % tid)
@@ -133,7 +161,6 @@ def main():
 
 	elif 'RUNNING' in status:
 		print ("Code is currently running... exiting!")
-		#os.system('mv autoplot*.log logs/')
 
 	else:
 		print ("No new datasets as of %s... exiting!" % str(datetime.datetime.now()))
