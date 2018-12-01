@@ -7,12 +7,14 @@ __version__ = "0.1"
 
 import os
 import sys
+from numpy import *
 from argparse import ArgumentParser, RawTextHelpFormatter
 from astropy.io import ascii
 import datetime
 import time
 from modules.functions import *
 import glob
+
 
 def main():
 	"""
