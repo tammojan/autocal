@@ -109,7 +109,7 @@ def main():
 					# Loop over beams (at least, all the expected ones)
 					for beam in beamlist:
 
-						msname = 'WSRTA%s_B%.2d.MS' % (tid,beam)
+						msname = 'WSRTA%s_B%.3d.MS' % (tid,beam)
 
 						# Do not process if the beam has already been done
 						if msname in done_ms:
