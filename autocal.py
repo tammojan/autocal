@@ -70,7 +70,7 @@ def main():
 
 				# First check if the data already exists, and if so, skip this step
 				#data_exists = check_happili(path,tid)
-				data_exists = 'Y'
+				data_exists = 'N'
 
 				# Decide which beams based on node, in groups of 10
 				start_beam = (int(hostname[-1])-1)*10
