@@ -35,6 +35,9 @@ def main():
 	# Parse the arguments above
 	args = parser.parse_args()
 
+	# Identify which host we are running on
+	hostname = os.popen('hostname').read().strip()
+
 	# Text file to keep track of processed datasets
 	processed = ascii.read('processed.txt')
 	done_tids = processed['tid']
@@ -70,7 +73,6 @@ def main():
 				data_exists = 'Y'
 
 				# Decide which beams based on node, in groups of 10
-				hostname = os.popen('hostname').read().strip()
 				start_beam = (int(hostname[-1])-1)*10
 				end_beam = start_beam + 9
 				beamlist = arange(start_beam,end_beam+1)
@@ -137,7 +139,7 @@ def main():
 			success = True
 			print("Success! Pipeline has been run for %s... finalising..." % tid)
 			if success == True:
-				os.chdir('/home/moss/autocal')
+				os.chdir('/home/moss/autocal/%s/' % hostname)
 				out = open('processed.txt','a')
 				out.write('%s %s\n' % (tid,str(datetime.datetime.now())))
 				out.flush()
