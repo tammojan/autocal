@@ -123,7 +123,7 @@ def main():
 							print('... running of Apercal pipeline complete!')
 
 							# Assume success, write progress out per beam
-							outms = open('/home/moss/autocal/processed_ms.txt','a')
+							outms = open('/home/moss/autocal/%s/processed_ms.txt' % hostname,'a')
 							outms.write('%s %s\n' % (msname,str(datetime.datetime.now())))
 							outms.flush()					
 						except:
