@@ -15,6 +15,7 @@ import time
 from modules.functions import *
 import glob
 
+from apercal.subs import getdata_alta
 
 def main():
 	"""
@@ -86,7 +87,8 @@ def main():
 					os.chdir('/data/apertif/%s' % tid)
 
 					# Get data with altadata library
-					cmd = ('python ~/altadata/getdata_alta.py %s %s-%s %.2d-%.2d N' % (tid[0:6],tid[6:],tid[6:],start_beam,end_beam))
+                                        getdata_alta(tid[0:6], int(tid[6:]), list(range(start_beam, end_beam+1)))
+					#cmd = ('python ~/altadata/getdata_alta.py %s %s-%s %.2d-%.2d N' % (tid[0:6],tid[6:],tid[6:],start_beam,end_beam))
 					print(cmd)
 					os.system(cmd)
 
@@ -173,7 +175,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
-
-
-
+	main()
