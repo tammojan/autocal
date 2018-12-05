@@ -128,10 +128,9 @@ def main():
 					print('Flux calibrator: %s (%s)' % (tdict['cal1_name'],tdict['cal1']))
 					print('Polarisation calibrator: %s (%s)' % (tdict['cal2_name'],tdict['cal2']))
 
-					# Send a slack hook (TBD)
-					cmd = """curl -X POST --data-urlencode 'payload={"text":"Apercal pipeline triggered for %s: %s"}' https://hooks.slack.com/services/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""" % (tid,target_name)
-					print(cmd)
-					os.system(cmd)
+					msg_color = 'good'
+					msg_text = "Apercal pipeline triggered for %s: %s" % (tid, target_name)
+					send_to_slack(msg_color, text)
 
 					# flux_status,flux_caltable = start_fluxcal_pipeline(tdict['calibrator1'][0:6],tdict['calibrator1'][6:],cal_beamlist)
 					# pol_status,pol_caltable = start_polcal_pipeline(tdict['calibrator2'][0:6],tdict['calibrator2'][6:],cal_beamlist)
@@ -153,32 +152,14 @@ def main():
 						out.write('%s %s\n' % (tid,str(datetime.datetime.now())))
 						out.flush()
 
-						# Send a slack hook (TBD)
-						cmd = """curl -X POST --data-urlencode 'payload={"text":"Apercal pipeline finished for %s: %s"}' https://hooks.slack.com/services/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""" % (tid,target_name)
-						print(cmd)
-						os.system(cmd)
+						msg_color = 'good'
+						msg_text = "Apercal pipeline finished successfully for %s: %s" % (tid, target_name)
+						send_to_slack(msg_color, text)
 
 					else:
-
 						msg_color = 'danger'
-						full_msg = """{
-						"attachments": [
-							{
-								"color": "%s",
-								"author_name": "AutoCalBot",
-								"title": "AutoCal Status Report",
-								"title_link": "http://ganglia.astron.nl/?c=happili",
-								"text": "Apercal pipeline triggering *FAILED* for %s: %s"
-						   }
-						]
-					}""" % (msg_color, tid, target_name)
-
-						#print(full_msg)
-
-						cmd = """curl -X POST --data-urlencode 'payload=%s' https://hooks.slack.com/services/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""" % (full_msg)
-						print(cmd)
-						os.system(cmd)
-
+						msg_text = "Apercal pipeline triggering *FAILED* for %s: %s" % (tid, target_name)
+						send_to_slack(msg_color, text)
 
 				else:
 					print('%s (%s) is not a target... Continuing!' % (tdict['target_name'],tid))

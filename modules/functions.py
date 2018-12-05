@@ -152,3 +152,28 @@ def get_json_info(tid):
 	duration = (duration_dt.days*24 + duration_dt.seconds / 3600.) # hours
 
 	return {'name' : name, 'start' : start, 'end' : end, 'duration' : duration}
+
+###################################################################
+# Slack hook function
+def send_to_slack(msg_color, msg_text):
+
+	# Construct the full message
+	full_msg = """{
+	"attachments": [
+		{
+			"color": "%s",
+			"author_name": "AutoCalBot",
+			"title": "AutoCal Status Report",
+			"title_link": "http://ganglia.astron.nl/?c=happili",
+			"text": "%s"
+	   }
+	]
+}""" % (msg_color, msg_text)
+	
+	# Send the command
+	cmd = """curl -X POST --data-urlencode 'payload=%s' https://hooks.slack.com/services/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""" % (full_msg)
+	print(cmd)
+	os.system(cmd)
+
+
+
