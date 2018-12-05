@@ -116,6 +116,13 @@ def identify_target(tid):
 			tdict['cal2'] = tid+1
 			tdict['cal2_name'] = cdict2['name']
 
+	else:
+
+		# Identify as a non-target
+		tdict['target'] = tid
+		tdict['type'] = 'non-target'
+		tdict['target_name'] = sdict['name']
+
 	return tdict
 
 
