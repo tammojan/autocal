@@ -104,7 +104,7 @@ def main():
 			# 	sys.exit()
 
 			# Call the pipeline script (we are downloading within that now)
-			try:
+			#try:
 
 				# Do the Apercal thing
 				
@@ -136,13 +136,13 @@ def main():
 					# pol_status,pol_caltable = start_polcal_pipeline(tdict['calibrator2'][0:6],tdict['calibrator2'][6:],cal_beamlist)
 					# status,results_path = start_target_pipeline(tdict['target'][0:6],tdict['target'][6:],beamlist,flux_caltable,pol_caltable)
 
-					try: 
+					#try: 
 						# New format for pipeline call (all in one)
-						success = start_apercal_pipeline((tdict['cal1'],tdict['cal1_name'],cal_beamlist),
+					success = start_apercal_pipeline((tdict['cal1'],tdict['cal1_name'],cal_beamlist),
 																	 (tdict['cal2'],tdict['cal2_name'],cal_beamlist),
 																	 (tdict['target'],tdict['target_name'],beamlist))
-					except Exception:
-						success = False
+					# except Exception:
+					# 	success = False
 
 					# If all success, write to the processed file
 					if success:
@@ -167,9 +167,9 @@ def main():
 					out.write('%s %s\n' % (tid,str(datetime.datetime.now())))
 					out.flush()
 
-			except IOError:
-				print('Something went wrong during triggering Apercal for %s...' % tid)
-				sys.exit()
+			# except IOError:
+			# 	print('Something went wrong during triggering Apercal for %s...' % tid)
+			# 	sys.exit()
 
 
 		# Print the finish time
