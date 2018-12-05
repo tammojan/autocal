@@ -153,8 +153,6 @@ def main():
 					out = open('processed.txt','a')
 					out.write('%s %s\n' % (tid,str(datetime.datetime.now())))
 					out.flush()
-
-					continue 
 					
 			except:
 				print('Something went wrong during triggering Apercal for %s...' % tid)
