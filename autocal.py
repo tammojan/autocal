@@ -20,11 +20,11 @@ from apercal.pipeline import start_apercal_pipeline
 
 def main():
 	"""
-    The main program to be run.
-    :return:
-    """
+	The main program to be run.
+	:return:
+	"""
 
-    # Time the total process length
+	# Time the total process length
 	start = time.time()
 
 	# Parse the relevant arguments
@@ -159,8 +159,23 @@ def main():
 						os.system(cmd)
 
 					else:
-						# Send a slack hook (TBD)
-						cmd = """curl -X POST --data-urlencode 'payload={"text":"Apercal pipeline triggering FAILED for %s: %s"}' https://hooks.slack.com/services/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""" % (tid,target_name)
+
+						msg_color = 'danger'
+						full_msg = """{
+						"attachments": [
+							{
+								"color": "%s",
+								"author_name": "AutoCalBot",
+								"title": "AutoCal Status Report",
+								"title_link": "http://ganglia.astron.nl/?c=happili",
+								"text": "Apercal pipeline triggering *FAILED* for %s: %s"
+						   }
+						]
+					}""" % (msg_color, tid, target_name)
+
+						#print(full_msg)
+
+						cmd = """curl -X POST --data-urlencode 'payload=%s' https://hooks.slack.com/services/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""" % (full_msg)
 						print(cmd)
 						os.system(cmd)
 
