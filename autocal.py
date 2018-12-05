@@ -16,7 +16,7 @@ from modules.functions import *
 import glob
 
 #from apercal.subs import getdata_alta
-#from apercal.pipeline import start_fluxcal_pipeline, start_polcal_pipeline, start_target_pipeline
+from apercal.pipeline import start_apercal_pipeline
 
 def main():
 	"""
@@ -128,28 +128,42 @@ def main():
 					print('Flux calibrator: %s (%s)' % (tdict['cal1_name'],tdict['cal1']))
 					print('Polarisation calibrator: %s (%s)' % (tdict['cal2_name'],tdict['cal2']))
 
+					# Send a slack hook (TBD)
+					cmd = """curl -X POST --data-urlencode 'payload={"text":"Apercal pipeline triggered for %s: %s"}' https://hooks.slack.com/services/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""" % (tid,target_name)
+					print(cmd)
+					os.system(cmd)
+
 					# flux_status,flux_caltable = start_fluxcal_pipeline(tdict['calibrator1'][0:6],tdict['calibrator1'][6:],cal_beamlist)
 					# pol_status,pol_caltable = start_polcal_pipeline(tdict['calibrator2'][0:6],tdict['calibrator2'][6:],cal_beamlist)
 					# status,results_path = start_target_pipeline(tdict['target'][0:6],tdict['target'][6:],beamlist,flux_caltable,pol_caltable)
 
-					# New format for pipeline call (all in one)
-					# status,results_path = start_apercal_pipeline((tdict['cal1'],tdict['cal1_name'],cal_beamlist),
-					# 											 (tdict['cal2'],tdict['cal2_name'],cal_beamlist),
-					# 											 (tdict['target'],tdict['target_name'],beamlist))
+					try: 
+						# New format for pipeline call (all in one)
+						success = start_apercal_pipeline((tdict['cal1'],tdict['cal1_name'],cal_beamlist),
+																	 (tdict['cal2'],tdict['cal2_name'],cal_beamlist),
+																	 (tdict['target'],tdict['target_name'],beamlist))
+					except Exception:
+						success = False
 
 					# If all success, write to the processed file
-					success = True
-					print("Success! Pipeline has been triggered for %s... finalising..." % tid)
-					if success == True:
+					if success:
+						print("Success! Pipeline has been triggered for %s... finalising..." % tid)
 						os.chdir('/home/moss/autocal/%s/' % hostname)
 						out = open('processed.txt','a')
 						out.write('%s %s\n' % (tid,str(datetime.datetime.now())))
 						out.flush()
 
-					# Send a slack hook (TBD)
-					cmd = """curl -X POST --data-urlencode 'payload={"text":"Apercal pipeline triggered for %s: %s"}' https://hooks.slack.com/services/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""" % (tid,target_name)
-					print(cmd)
-					os.system(cmd)
+						# Send a slack hook (TBD)
+						cmd = """curl -X POST --data-urlencode 'payload={"text":"Apercal pipeline finished for %s: %s"}' https://hooks.slack.com/services/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""" % (tid,target_name)
+						print(cmd)
+						os.system(cmd)
+
+					else:
+						# Send a slack hook (TBD)
+						cmd = """curl -X POST --data-urlencode 'payload={"text":"Apercal pipeline triggering FAILED for %s: %s"}' https://hooks.slack.com/services/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""" % (tid,target_name)
+						print(cmd)
+						os.system(cmd)
+
 
 				else:
 					print('%s (%s) is not a target... Continuing!' % (tdict['target_name'],tid))
