@@ -36,7 +36,7 @@ def check_alta(path,done_tids):
 		cmd = os.popen('imeta ls -C %s%s' % (path,tid)).read()
 		status = cmd.split('attribute: ALTA_State')[1].split('value: ')[1].split('\n')[0]
 		if status == 'ARCHIVED':
-			tids.append(int(tid))
+			tids.append(tid)
 
 	# Return the final list of new ones
 	return tids

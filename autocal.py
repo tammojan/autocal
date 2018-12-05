@@ -68,6 +68,9 @@ def main():
 			# Reset the success term
 			success = False
 
+			# Let's make it an integer
+			tid = int(tid)
+
 			# try: 
 
 			# 	# First check if the data already exists, and if so, skip this step
