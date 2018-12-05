@@ -130,7 +130,7 @@ def main():
 
 					msg_color = 'good'
 					msg_text = "Apercal pipeline triggered for %s: %s" % (tid, target_name)
-					send_to_slack(msg_color, text)
+					send_to_slack(msg_color, msg_text)
 
 					# flux_status,flux_caltable = start_fluxcal_pipeline(tdict['calibrator1'][0:6],tdict['calibrator1'][6:],cal_beamlist)
 					# pol_status,pol_caltable = start_polcal_pipeline(tdict['calibrator2'][0:6],tdict['calibrator2'][6:],cal_beamlist)
@@ -154,12 +154,12 @@ def main():
 
 						msg_color = 'good'
 						msg_text = "Apercal pipeline finished successfully for %s: %s" % (tid, target_name)
-						send_to_slack(msg_color, text)
+						send_to_slack(msg_color, msg_text)
 
 					else:
 						msg_color = 'danger'
 						msg_text = "Apercal pipeline triggering *FAILED* for %s: %s" % (tid, target_name)
-						send_to_slack(msg_color, text)
+						send_to_slack(msg_color, msg_text)
 
 				else:
 					print('%s (%s) is not a target... Continuing!' % (tdict['target_name'],tid))
