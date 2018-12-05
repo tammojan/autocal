@@ -149,11 +149,11 @@ def main():
 					os.system(cmd)
 
 				else:
-					print('%s is not a target... Continuing!' % tid)
+					print('%s (%s) is not a target... Continuing!' % (tdict['target_name'],tid))
 					out = open('processed.txt','a')
 					out.write('%s %s\n' % (tid,str(datetime.datetime.now())))
 					out.flush()
-					
+
 			except:
 				print('Something went wrong during triggering Apercal for %s...' % tid)
 				sys.exit()
