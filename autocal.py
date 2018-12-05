@@ -15,7 +15,7 @@ import time
 from modules.functions import *
 import glob
 
-from apercal.subs import getdata_alta
+#from apercal.subs import getdata_alta
 #from apercal.pipeline import start_fluxcal_pipeline, start_polcal_pipeline, start_target_pipeline
 
 def main():
@@ -44,9 +44,9 @@ def main():
 	processed = ascii.read('processed.txt')
 	done_tids = processed['tid']
 
-	# Text file to keep track of processed measurement sets specifically
-	processed_ms = ascii.read('processed_ms.txt')
-	done_ms = processed_ms['msname']
+	# # Text file to keep track of processed measurement sets specifically
+	# processed_ms = ascii.read('processed_ms.txt')
+	# done_ms = processed_ms['msname']
 
 	# Call ALTA to find new datasets
 	path = args.alta_path
@@ -154,7 +154,7 @@ def main():
 					out.write('%s %s\n' % (tid,str(datetime.datetime.now())))
 					out.flush()
 
-			except:
+			except IOError:
 				print('Something went wrong during triggering Apercal for %s...' % tid)
 				sys.exit()
 
