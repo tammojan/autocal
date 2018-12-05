@@ -9,6 +9,9 @@ import os
 import sys
 import glob
 import pyrap.tables as pt
+import requests
+import json
+import datetime
 
 ###################################################################
 # Function to check ALTA for new archived datasets
@@ -73,3 +76,72 @@ def check_happili(path,tid):
 	return data_exists
 
 ###################################################################
+# Function to identify whether a dataset is a target
+# Based on a call to ATDB for now, tbd in future
+
+def identify_target(tid):
+
+	calibrators = ['3C48',
+				   '3C138',
+				   '3C147',
+				   '3C196',
+				   '3C286',
+				   '3C295',
+				   'CTD93']
+
+	# Get information from json
+	sdict = get_json_info(tid)
+
+	# Return info dictionary
+	tdict = {}
+
+	# Decide based on length of observation
+	# Targets will always be longer than 11 hours right?
+	if sdict['duration'] >= 11:
+
+		# Identify as a target
+		tdict['target'] = tid
+		tdict['type'] = 'target'
+		tdict['target_name'] = sdict['name']
+
+		# Find calibrator 1
+		cdict1 = get_json_info(tid-1)
+		if cdict1['duration'] <= 0.5 and cdict1['name'] in calibrators:
+			tdict['cal1'] = tid-1
+			tdict['cal1_name'] = cdict1['name']
+
+		# Find calibrator 2
+		cdict2 = get_json_info(tid+1)
+		if cdict2['duration'] <= 0.5 and cdict2['name'] in calibrators:
+			tdict['cal2'] = tid+1
+			tdict['cal2_name'] = cdict2['name']
+
+	return tdict
+
+
+###################################################################
+# Function to get the info JSON
+def get_json_info(tid):
+
+	# Check for observation on ATDB
+	try:
+		response = requests.get('http://atdb.astron.nl/atdb/observations/?taskID=%s' % tid)
+	except:
+		print("Could not locate observation information!")
+		return {'name' : None, 'start' : None, 'end' : None, 'duration' : None}
+
+	# If it reads, check whether it is a target
+	json_data = json.loads(response.text)
+
+	# Get the information
+	name = json_data['results'][0]['field_name']
+	start = json_data['results'][0]['starttime']
+	end = json_data['results'][0]['endtime']
+
+	# Calculate the duration
+	start_dt = datetime.datetime.strptime(start,'%Y-%m-%dT%H:%M:%SZ')
+	end_dt = datetime.datetime.strptime(end,'%Y-%m-%dT%H:%M:%SZ')
+	duration_dt = end_dt - start_dt
+	duration = (duration_dt.days*24 + duration_dt.seconds / 3600.) # hours
+
+	return {'name' : name, 'start' : start, 'end' : end, 'duration' : duration}

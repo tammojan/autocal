@@ -16,6 +16,7 @@ from modules.functions import *
 import glob
 
 from apercal.subs import getdata_alta
+#from apercal.pipeline import start_fluxcal_pipeline, start_polcal_pipeline, start_target_pipeline
 
 def main():
 	"""
@@ -67,92 +68,92 @@ def main():
 			# Reset the success term
 			success = False
 
-			try: 
+			# try: 
 
-				# First check if the data already exists, and if so, skip this step
-				#data_exists = check_happili(path,tid)
-				data_exists = 'N'
+			# 	# First check if the data already exists, and if so, skip this step
+			# 	#data_exists = check_happili(path,tid)
+			# 	data_exists = 'N'
 
-				# Decide which beams based on node, in groups of 10
-				start_beam = (int(hostname[-1])-1)*10
-				end_beam = start_beam + 9
-				beamlist = arange(start_beam,end_beam+1)
+			# 	# Decide which beams based on node, in groups of 10
+			# 	start_beam = (int(hostname[-1])-1)*10
+			# 	end_beam = start_beam + 9
+			# 	beamlist = arange(start_beam,end_beam+1)
 
-				# Otherwise, download the data
-				if data_exists == 'N':
-					try:
-						os.mkdir('/data/apertif/%s' % tid)
-					except:
-						print('Directory already exists!')
-					os.chdir('/data/apertif/%s' % tid)
+			# 	# Otherwise, download the data
+			# 	if data_exists == 'N':
+			# 		try:
+			# 			os.mkdir('/data/apertif/%s' % tid)
+			# 		except:
+			# 			print('Directory already exists!')
+			# 		os.chdir('/data/apertif/%s' % tid)
 
-					# Get data with altadata library
-                                        getdata_alta(tid[0:6], int(tid[6:]), list(range(start_beam, end_beam+1)))
-					#cmd = ('python ~/altadata/getdata_alta.py %s %s-%s %.2d-%.2d N' % (tid[0:6],tid[6:],tid[6:],start_beam,end_beam))
-					print(cmd)
-					os.system(cmd)
+			# 		# Get data with altadata library
+			# 		getdata_alta(tid[0:6], int(tid[6:]), list(range(start_beam, end_beam+1)))
+			# 		#cmd = ('python ~/altadata/getdata_alta.py %s %s-%s %.2d-%.2d N' % (tid[0:6],tid[6:],tid[6:],start_beam,end_beam))
+			# 		print(cmd)
+			# 		os.system(cmd)
 
-				else: 
-					print("Data already exists for %s! Continuing to pipeline..." % tid)
+			# 	else: 
+			# 		print("Data already exists for %s! Continuing to pipeline..." % tid)
 
-			except:
-				print('Something went wrong during download for %s...' % tid)
-				sys.exit()
+			# except:
+			# 	print('Something went wrong during download for %s...' % tid)
+			# 	sys.exit()
 
-			# Call the pipeline script
+			# Call the pipeline script (we are downloading within that now)
 			try:
 
 				# Do the Apercal thing
-				something = True
-				if something == True:
+				
+				# Check if we have identified an actual target 
+				# If it is a target, it will also bring over the calibrators
+				tdict = identify_target(tid)
 
-					print('APERCAL PIPELINE STUFF WOULD GO HERE!')
+				if tdict['type'] == 'target':
 
-					# Loop over beams (at least, all the expected ones)
-					for beam in beamlist:
+					target_name = tdict['target_name']
 
-						msname = 'WSRTA%s_B%.3d.MS' % (tid,beam)
+					print('Processing target observations: %s (%s)...' % (target_name,tid))
 
-						# Do not process if the beam has already been done
-						if msname in done_ms:
-							print('I have already processed %s... continuing!' % msname)
-							continue
+					# Determine which beams we want to process
+					start_beam = (int(hostname[-1])-1)*10
+					end_beam = start_beam + 9
+					beamlist = arange(start_beam,end_beam+1)
+					cal_beamlist = [0]
 
-						try:	
-							print('Currently running Apercal for %s...' % msname)
+					# print info from tdict
+					print('Flux calibrator: %s (%s)' % (tdict['cal1_name'],tdict['cal1']))
+					print('Polarisation calibrator: %s (%s)' % (tdict['cal2_name'],tdict['cal2']))
 
-							# YAY APERCAL SUCCESS
-							print('... running of Apercal pipeline complete!')
+					# flux_status,flux_caltable = start_fluxcal_pipeline(tdict['calibrator1'][0:6],tdict['calibrator1'][6:],cal_beamlist)
+					# pol_status,pol_caltable = start_polcal_pipeline(tdict['calibrator2'][0:6],tdict['calibrator2'][6:],cal_beamlist)
+					# status,results_path = start_target_pipeline(tdict['target'][0:6],tdict['target'][6:],beamlist,flux_caltable,pol_caltable)
 
-							# Assume success, write progress out per beam
-							outms = open('/home/moss/autocal/%s/processed_ms.txt' % hostname,'a')
-							outms.write('%s %s\n' % (msname,str(datetime.datetime.now())))
-							outms.flush()					
-						except:
-							print('Some error message for %s... Continuing!' % msname)
+					# New format for pipeline call (all in one)
+					# status,results_path = start_apercal_pipeline((tdict['cal1'],tdict['cal1_name'],cal_beamlist),
+					# 											 (tdict['cal2'],tdict['cal2_name'],cal_beamlist),
+					# 											 (tdict['target'],tdict['target_name'],beamlist))
+
+					# If all success, write to the processed file
+					success = True
+					print("Success! Pipeline has been triggered for %s... finalising..." % tid)
+					if success == True:
+						os.chdir('/home/moss/autocal/%s/' % hostname)
+						out = open('processed.txt','a')
+						out.write('%s %s\n' % (tid,str(datetime.datetime.now())))
+						out.flush()
+
+					# Send a slack hook (TBD)
+					cmd = """curl -X POST --data-urlencode 'payload={"text":"Apercal pipeline triggered for %s: %s"}' https://hooks.slack.com/services/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""" % (tid,target_name)
+					print(cmd)
+					os.system(cmd)
 
 				else:
-					print('Some error message for %s... Continuing!' % tid)
+					print('%s is not a target... Continuing!' % tid)
 			except:
-				print('Something went wrong during running Apercal for %s...' % tid)
+				print('Something went wrong during triggering Apercal for %s...' % tid)
 				sys.exit()
 
-			# If all success, write to the processed file
-			success = True
-			print("Success! Pipeline has been run for %s... finalising..." % tid)
-			if success == True:
-				os.chdir('/home/moss/autocal/%s/' % hostname)
-				out = open('processed.txt','a')
-				out.write('%s %s\n' % (tid,str(datetime.datetime.now())))
-				out.flush()
-
-				# Remove the data from happili (it won't try to generate again if in text file)
-				os.system('rm -rf /data/apertif/%s' % tid)
-
-				# Send a slack hook (TBD)
-				# cmd = """curl -X POST --data-urlencode 'payload={"text":"Inspection plots for %s are ready! See: http://apertifsurveys.wordpress.com/%s"}' https://hooks.slack.com/services/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""" % (tid,tid)
-				# print(cmd)
-				# os.system(cmd)
 
 		# Print the finish time
 		end = time.time()
