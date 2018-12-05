@@ -105,6 +105,7 @@ def main():
 
 			# Call the pipeline script (we are downloading within that now)
 			#try:
+			if True:
 
 				# Do the Apercal thing
 				
