@@ -26,7 +26,7 @@ def check_alta(path,done_tids):
 	# Process new ones (only those starting with 1*)
 	for x in cmd:
 		folder = x.split('/')[-1].strip()
-		if folder.startswith('1') and float(folder) not in done_tids:
+		if folder.startswith('1') and '_INSP' not in folder and float(folder) not in done_tids:
 			potential_tids.append(folder)
 
 	# Check the status (e.g. is it archived?)
