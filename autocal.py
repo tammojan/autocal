@@ -140,8 +140,8 @@ def main():
 					#try: 
 						# New format for pipeline call (all in one)
 					#success = start_apercal_pipeline((tdict['cal1'],tdict['cal1_name'],cal_beamlist),
-																	 (tdict['cal2'],tdict['cal2_name'],cal_beamlist),
-																	 (tdict['target'],tdict['target_name'],beamlist))
+																	 # (tdict['cal2'],tdict['cal2_name'],cal_beamlist),
+																	 # (tdict['target'],tdict['target_name'],beamlist))
 					
 					success = True
 					# except Exception:
