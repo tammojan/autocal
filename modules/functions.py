@@ -104,13 +104,15 @@ def identify_target(tid):
 		tdict['type'] = 'target'
 		tdict['target_name'] = sdict['name']
 
-		# Find calibrator 1
-		cdict1 = get_json_info(tid-1)
+		# Find calibrator 1 (Flux Calibrator)
+		# Hack to make shakedown work... 
+		cdict1 = get_json_info(tid+2)
 		if cdict1['duration'] <= 0.5 and cdict1['name'] in calibrators:
-			tdict['cal1'] = tid-1
+			tdict['cal1'] = tid+2
 			tdict['cal1_name'] = cdict1['name']
 
-		# Find calibrator 2
+		# Find calibrator 2 (Polarisation Calibrator)
+		# Hack to make shakedown work... 
 		cdict2 = get_json_info(tid+1)
 		if cdict2['duration'] <= 0.5 and cdict2['name'] in calibrators:
 			tdict['cal2'] = tid+1
