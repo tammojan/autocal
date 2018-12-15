@@ -97,7 +97,7 @@ def identify_target(tid):
 
 	# Decide based on length of observation
 	# Targets will always be longer than 11 hours right?
-	if sdict['duration'] >= 11:
+	if sdict['duration'] >= 11 and str(sdict['name']) not in calibrators:
 
 		# Identify as a target
 		tdict['target'] = tid
@@ -105,14 +105,14 @@ def identify_target(tid):
 		tdict['target_name'] = sdict['name']
 
 		# Find calibrator 1 (Flux Calibrator)
-		# Hack to make shakedown work... 
-		cdict1 = get_json_info(tid+2)
+		# Hack to make weekend work... 
+		cdict1 = get_json_info(tid-1)
 		if cdict1['duration'] <= 0.5 and cdict1['name'] in calibrators:
 			tdict['cal1'] = tid+2
 			tdict['cal1_name'] = cdict1['name']
 
 		# Find calibrator 2 (Polarisation Calibrator)
-		# Hack to make shakedown work... 
+		# Hack to make weekend work...
 		cdict2 = get_json_info(tid+1)
 		if cdict2['duration'] <= 0.5 and cdict2['name'] in calibrators:
 			tdict['cal2'] = tid+1
