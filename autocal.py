@@ -139,7 +139,7 @@ def main():
 
 					#try: 
 						# New format for pipeline call (all in one)
-					success = start_apercal_pipeline((tdict['cal1'],tdict['cal1_name'],cal_beamlist),
+					success, pipeline_msg = start_apercal_pipeline((tdict['cal1'],tdict['cal1_name'],cal_beamlist),
 													 (tdict['cal2'],tdict['cal2_name'],cal_beamlist),
 													 (tdict['target'],tdict['target_name'],beamlist))
 					
@@ -156,13 +156,14 @@ def main():
 						out.flush()
 
 						msg_color = 'good'
-						msg_text = "Apercal pipeline finished successfully for %s: %s" % (tid, target_name)
-						send_to_slack(msg_color, msg_text)
+						msg_text = "Apercal pipeline finished successfully for %s: %s\n" % (tid, target_name)
+						send_to_slack(msg_color, msg_text + pipeline_msg)
 
 					else:
 						msg_color = 'danger'
-						msg_text = "Apercal pipeline triggering *FAILED* for %s: %s" % (tid, target_name)
-						send_to_slack(msg_color, msg_text)
+						msg_text = "Apercal pipeline *FAILED* for %s: %s\n" % (tid, target_name)
+						send_to_slack(msg_color, msg_text + pipeline_msg)
+						raise Exception("I am exiting cuz like badness... %s: %s" % tid, target_name)
 
 				else:
 					print('%s (%s) is not a target... Continuing!' % (tdict['target_name'],tid))
