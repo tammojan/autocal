@@ -157,7 +157,7 @@ def get_json_info(tid):
 
 ###################################################################
 # Slack hook function
-def send_to_slack(msg_color, msg_text):
+def send_to_slack(msg_color, msg_text, hostname):
 
 	# Construct the full message
 	full_msg = """{
@@ -165,12 +165,12 @@ def send_to_slack(msg_color, msg_text):
 		{
 			"color": "%s",
 			"author_name": "AutoCalBot",
-			"title": "AutoCal Status Report",
+			"title": "AutoCal Status Report: %s",
 			"title_link": "http://ganglia.astron.nl/?c=happili",
 			"text": "%s"
 	   }
 	]
-}""" % (msg_color, msg_text)
+}""" % (msg_color, hostname, msg_text)
 	
 	# Send the command
 	cmd = """curl -X POST --data-urlencode 'payload=%s' https://hooks.slack.com/services/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""" % (full_msg)
